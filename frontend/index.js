@@ -1,6 +1,7 @@
 import { LedMatrix } from 'led-matrix'
 import { createStore, Color } from 'matrix-display-store'
 import { faceOutline, face, tile } from './filter'
+import { faceTone } from './sound'
 import faceDetect from './faceDetect'
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pixalSizeElement = document.getElementById('pixal-size')
   const pixalMarginElement = document.getElementById('pixal-margin')
   const refreshElement = document.getElementById('refresh')
+  const soundRefreshElement = document.getElementById('sound-refresh')
   const filterElement = document.getElementById('filter')
 
   let videoInput, ctracker, intervalTimer;
@@ -20,9 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const pixalSize = Number(pixalSizeElement.value)
     const pixalMargin = Number(pixalMarginElement.value)
     const refresh = Number(refreshElement.value)
+    const soundRefresh = Number(soundRefreshElement.value)
     const filter = filterElement.value
 
-    reset({width, height}, pixalSize, pixalMargin, refresh, filter)
+    reset({width, height}, pixalSize, pixalMargin, refresh, soundRefresh, filter)
   }
 
   widthElement.onchange = onSettingChanged
@@ -30,9 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
   pixalSizeElement.onchange = onSettingChanged
   pixalMarginElement.onchange = onSettingChanged
   refreshElement.onchange = onSettingChanged
+  soundRefreshElement.onchange = onSettingChanged
   filterElement.onchange = onSettingChanged
 
-  function reset(size, pixalSize, pixalMargin, refresh, filter) {
+  function reset(size, pixalSize, pixalMargin, refresh, soundRefresh, filter) {
     const store = createStore(size.width, size.height)
     const matrix = new LedMatrix(canvasElement, {
       x: size.width,
@@ -54,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if(filter === 'faceOutline') faceOutline(positions, store, size, videoInput)
       else if(filter === 'face') face(positions, store, size, videoInput)
       else if(filter === 'tile') tile(positions, store, size, videoInput)
+
+      if(soundRefresh) faceTone(positions, store, size, soundRefresh)
 
       matrix.render()
     }, refresh)
