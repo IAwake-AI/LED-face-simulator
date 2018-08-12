@@ -1,0 +1,31 @@
+{
+  "name": "face-sim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node build/index.js",
+    "dev": "nodemon src/index.js --exec babel-node --presets es2015,stage-2",
+    "frontend": "webpack --watch --mode development",
+    "build": "webpack --mode production && babel src -d build --presets es2015,stage-2",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "led-matrix": "^1.0.0",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/node": "^7.0.0-rc.1",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.0.0-beta.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "matrix-display-store": "^1.0.0",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  }
+}
