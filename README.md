@@ -47,3 +47,8 @@ $ npm start
 
 NOTES: Set the environment variables PORT={any port} or NO_TLS=1 to override the default
 configuration. This is needed if you deploy to heroku, aws, docker, etc.
+
+Checkout `/demo-2/index.html` for a partical demo
+
+Checkout [commit diff](https://github.com/IAwake-AI/LED-face-simulator/commit/4958f78134381ec954831bc75fd9c7bfff2ac21b) to see how to add a new filter
+
