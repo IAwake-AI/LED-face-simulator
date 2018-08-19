@@ -1,6 +1,6 @@
 import { LedMatrix } from 'led-matrix'
 import { createStore, Color } from 'matrix-display-store'
-import { faceOutline, face, tile } from './filter'
+import { faceOutline, face, tile, tileSpark} from './filter'
 import { faceTone } from './sound'
 import faceDetect from './faceDetect'
 
@@ -73,17 +73,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // a user changes any control so we need to cleanup/reset
     // our timer.
     intervalTimer && clearInterval(intervalTimer)
+    let lastPositions
     intervalTimer = setInterval(() => {
 
       // get the current face detection points from the camera and
       // skip updating anything in the matrix/store if no face detected
-      const positions = ctracker && ctracker.getCurrentPosition()
-      if(!positions) return
+      let positions = ctracker && ctracker.getCurrentPosition()
+      if(!positions) {
+        if(!lastPositions) return
+        positions = lastPositions
+      }
 
       // apply the user selected filter using the current config, face points, and matrix/store data
       if(filter === 'faceOutline') faceOutline(positions, store, size, videoInput)
       else if(filter === 'face') face(positions, store, size, videoInput)
       else if(filter === 'tile') tile(positions, store, size, videoInput)
+      else if(filter === 'tileSpark') tileSpark(positions, store, size, videoInput)
 
       // Now play music using the new matrix/store if the user has turned it on
       if(soundRefresh) faceTone(positions, store, size, soundRefresh)
@@ -94,6 +99,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // redraw the canvas display
       // using the current matrix/store
       matrix.render()
+
+      if(lastPositions !== positions) {
+        lastPositions = positions
+      }
     }, refresh)
   }
 
