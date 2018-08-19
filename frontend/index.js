@@ -4,7 +4,20 @@ import { faceOutline, face, tile } from './filter'
 import { faceTone } from './sound'
 import faceDetect from './faceDetect'
 
+// wait for the page to load
 document.addEventListener("DOMContentLoaded", () => {
+
+  let videoInput, ctracker, intervalTimer;
+
+  // open a socket connection to the raspberry pi
+  const socket = io()
+
+  // =============================================
+  // get references to all the controls on the page
+  // when any control is changed call onSettingChanged
+  // that in turn will call reset to restart the face
+  // filter
+
   const canvasElement = document.getElementById('matrix')
   const widthElement = document.getElementById('width')
   const heightElement = document.getElementById('height')
@@ -13,8 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const refreshElement = document.getElementById('refresh')
   const soundRefreshElement = document.getElementById('sound-refresh')
   const filterElement = document.getElementById('filter')
-
-  let videoInput, ctracker, intervalTimer;
 
   function onSettingChanged() {
     const width = Number(widthElement.value)
@@ -36,7 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
   soundRefreshElement.onchange = onSettingChanged
   filterElement.onchange = onSettingChanged
 
+  // =============================================
+  // simple function to start a loop waiting for data
+  // from the camera then it apply a filter that updates
+  // the matrix and sends data via socket to the raspberry pi
+
   function reset(size, pixalSize, pixalMargin, refresh, soundRefresh, filter) {
+
+    // setup a LED matrix (in memory model of all the LEDs)
     const store = createStore(size.width, size.height)
     const matrix = new LedMatrix(canvasElement, {
       x: size.width,
@@ -48,33 +66,45 @@ document.addEventListener("DOMContentLoaded", () => {
       animated: false,
     });
 
+
     matrix.setData(store.matrix)
 
+    // start/reset timer - remember reset is called each time
+    // a user changes any control so we need to cleanup/reset
+    // our timer.
     intervalTimer && clearInterval(intervalTimer)
     intervalTimer = setInterval(() => {
+
+      // get the current face detection points from the camera and
+      // skip updating anything in the matrix/store if no face detected
       const positions = ctracker && ctracker.getCurrentPosition()
       if(!positions) return
 
+      // apply the user selected filter using the current config, face points, and matrix/store data
       if(filter === 'faceOutline') faceOutline(positions, store, size, videoInput)
       else if(filter === 'face') face(positions, store, size, videoInput)
       else if(filter === 'tile') tile(positions, store, size, videoInput)
 
+      // Now play music using the new matrix/store if the user has turned it on
       if(soundRefresh) faceTone(positions, store, size, soundRefresh)
 
+      // send the data to the raspberry pi to refresh the real LED matrix
+      socket.emit('face', matrix.data.slice(0, size.width * size.height).map(({color}) => [color.r, color.g, color.b, color.a]))
+
+      // redraw the canvas display
+      // using the current matrix/store
       matrix.render()
     }, refresh)
-
-    // only init faceDetect once (and save off references to video & ctracker
-    if(!ctracker) {
-      faceDetect((_videoInput, _ctracker) => {
-        videoInput = _videoInput
-        ctracker = _ctracker
-
-        videoInput.play()
-        ctracker.start(videoInput)
-      })
-    }
   }
+
+  // now start the face detect loop
+  faceDetect((_videoInput, _ctracker) => {
+    videoInput = _videoInput
+    ctracker = _ctracker
+
+    videoInput.play()
+    ctracker.start(videoInput)
+  })
 
   // init the application
   onSettingChanged()

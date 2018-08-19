@@ -1,11 +1,12 @@
 {
-  "name": "face-sim",
+  "name": "led-face-simulator",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
-    "dev": "nodemon src/index.js --exec babel-node --presets es2015,stage-2",
+    "dev": "NO_TLS=1 PORT=3000 concurrently npm:backend npm:frontend",
+    "backend": "nodemon src/index.js --exec babel-node --presets es2015,stage-2",
     "frontend": "webpack --watch --mode development",
     "heroku-postbuild": "npm run build",
     "build": "webpack --mode production && babel src -d build --presets es2015,stage-2",
@@ -26,6 +27,7 @@
     "babel-loader": "^8.0.0-beta.4",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "concurrently": "^3.6.1",
     "matrix-display-store": "^1.0.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0"

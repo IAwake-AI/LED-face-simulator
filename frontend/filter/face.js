@@ -19,15 +19,4 @@ export default function(positions, store, size) {
       Math.floor((positions[ix][1] - clamp.min[1]) / ((clamp.max[1] - clamp.min[1]) / size.height)),
       Color.hex('#FFCC00'))
   })
-
-  /*
-
-      var p = c.getImageData(x, y, 1, 1).data;
-    var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
-
-
-   */
-
-  //store.drawPixel(2, t++, Color.hex('#FFCC00'))
-  //store.drawLine(0, 0, 4, 1, Color.hex('#FF00AA'))
 }
