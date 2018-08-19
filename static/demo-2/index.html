@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <style>
+    html, body {padding:0; margin: 0; height: 100%; background: #000000}
+    #particles-js{
+      width: 800px;
+      height: 800px;
+    }
+    .chat-box {
+      position: fixed;
+      transform: translate(20px, 30px);
+      font-family: Arial;
+      font-weight: lighter;
+      font-size: 12px;
+      color: rgba(255,255,255,.8);
+      width: 300px;
+      height: 500px;
+      border:solid 1px rgba(255,255,255,.4);
+      padding: 5px;
+      overflow-y: scroll;
+    }
+    .message {
+    }
+    .pin-bottom {
+      position: absolute;
+      bottom: 0;
+      width: 300px;
+    }
+    #status {
+      position: absolute;
+      z-index: 100;
+      right: 30px;
+      top:0;
+      color: #FFF;
+    }
+    .side {
+      right:10px;
+      top:200px;
+      position: fixed;
+    }
+    .side a {
+      color: #FFF;
+      font-size: 24px;
+    }
+  </style>
+  <script src="/clmtrackr.js"></script>
+  <script src="./particles.js"></script>
+</head>
+<body>
+<video style="position: absolute;right:20px; top: 80px;" id="video" width="100" height="100" preload="auto" playsinline autoplay></video>
+<div id="particles-js"/>
+<div class="side">
+<a href="?mode=happy">Happy</a><br/>
+<a href="?mode=demoic">Demoic</a><br/>
+<a href="?mode=ghost">Ghost</a><br/>
+<a href="?mode=face">Face</a><br/>
+</div>
+<script src="./particles_config.js"></script>
+<script src="./face.js"></script>
+</div>
+</body>
+</html>
