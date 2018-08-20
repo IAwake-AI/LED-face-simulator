@@ -6,6 +6,21 @@ import https from 'https'
 import http from 'http'
 import express from 'express'
 import socketIO from 'socket.io'
+import detectRPI from 'detect-rpi'
+
+let leds = null
+if(detectRPI()) {
+  try {
+    const Blinkt = require('node-blinkt')
+    leds = new Blinkt()
+  } catch(err) {
+    console.log('On RPI you need to install "node-blinkt" and run as root!\n$ npm install node-blinkt\n\n')
+    process.exitCode(1)
+  }
+
+  leds.setup()
+  leds.clearAll()
+}
 
 const app = express()
 
@@ -23,7 +38,13 @@ const io = socketIO(index)
 
 io.on('connection', function (socket) {
   socket.on('face', function (data) {
+    if(leds) {
+      data.forEach((color, ix)=> {
+        leds.setPixel(ix, color[0], color[1], color[2], color[3])
+      })
 
+      leds.sendUpdate()
+    }
   });
 });
 
