@@ -22,6 +22,11 @@ if(detectRPI()) {
   leds.clearAll()
 }
 
+function toRGB(hex) {
+
+  return [r, g, b, 1]
+}
+
 const app = express()
 
 const noTLS = process.env.NO_TLS
@@ -39,8 +44,13 @@ const io = socketIO(index)
 io.on('connection', function (socket) {
   socket.on('face', function (data) {
     if(leds) {
-      data.forEach((color, ix)=> {
-        leds.setPixel(ix, color[0], color[1], color[2], color[3])
+      data.split(',').forEach((hex, ix) => {
+        const bigint = parseInt(hex, 16)
+        const r = (bigint >> 16) & 255
+        const g = (bigint >> 8) & 255
+        const b = bigint & 255
+
+        leds.setPixel(ix, r, g, b, 1)
       })
 
       leds.sendUpdate()

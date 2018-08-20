@@ -52,3 +52,9 @@ Checkout `/demo-2/index.html` for a partical demo
 
 Checkout [commit diff](https://github.com/IAwake-AI/LED-face-simulator/commit/4958f78134381ec954831bc75fd9c7bfff2ac21b) to see how to add a new filter
 
+### CODE
+
+The `frontend` directory holds all the logic for face detection and sending
+data to the backend. It sends the data via a websocket.
+
+

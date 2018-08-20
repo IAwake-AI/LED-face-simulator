@@ -4,6 +4,33 @@ import { faceOutline, face, tile, tileSpark} from './filter'
 import { faceTone } from './sound'
 import faceDetect from './faceDetect'
 
+// simple helper function to build the face mask
+// its kinda like a slop calculator. You set the
+// row (0-end of the slope) and the len is the
+// starting length, then the grow is a + or -
+// number that will be the amount that will be
+// masked.
+// For Example, (2, size, 4, 3) would start with 4 square in the middle +
+// (row*grow). If you have a (2, size, 4, -3) it would be (4*3) pixels from
+// then edges of the matrix
+const emptyPixel = Color.rgba(0, 0, 0, 0)
+function slopeMask(row, size, len, grow) {
+  const span = Math.floor((grow*row) + len)
+  let x = Math.floor((size.width/2)-(span/2))
+  let x2 = x + span
+
+  if(x<0) x = 0
+  if(x2 > size.width) x2 = size.width
+
+  return [x, x2]
+}
+
+function rgb2hex({r, g, b}) {
+  let rgb = b | (g << 8) | (r << 16);
+  // if 000000 -> 0
+  return '' + (0x1000000 + rgb).toString(16).slice(1)
+}
+
 // wait for the page to load
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -54,6 +81,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function reset(size, pixalSize, pixalMargin, refresh, soundRefresh, filter) {
 
+    // now build a mask because the LED are not a square box, but a face shape
+    // the mask is an array of [row] => that have [start, end] so that anything
+    // between 0-start and end-(end edge) will be ignored or only pixel between
+    // start-end will be used per row
+    const mask = []
+    const level1 = Math.floor(size.height * 1/5)
+    const level2 = Math.floor(size.height * 4/5)
+    const level3 = Math.floor(size.height * 2/5)
+
+    mask[0] = slopeMask(0, size, 2, 10)
+    for(let i=1; i < level1; i++) mask[i] = slopeMask(i, size, 4, 10)
+    for(let i=0; i < level2; i++) mask[i+level1] = slopeMask(i, size, size.width, -.6)
+    for(let i=0; i < level3; i++) mask[i+level2] = slopeMask(i, size, mask[level1+level2-1][1] - mask[level1+level2-1][0], -3)
+
+    // WITH NO MASK!
+    //for(let i=0; i < size.height; i++) mask[i] = [0, size.width]
+
     // setup a LED matrix (in memory model of all the LEDs)
     const store = createStore(size.width, size.height)
     const matrix = new LedMatrix(canvasElement, {
@@ -65,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
       glow: true,
       animated: false,
     });
-
 
     matrix.setData(store.matrix)
 
@@ -90,11 +133,23 @@ document.addEventListener("DOMContentLoaded", () => {
       else if(filter === 'tile') tile(positions, store, size, videoInput)
       else if(filter === 'tileSpark') tileSpark(positions, store, size, videoInput)
 
+      mask.forEach(([offset, end], ix) => {
+        for(let x=0; x<offset; x++) store.drawPixel(x, ix, emptyPixel)
+        for(let x=end; x<size.width; x++) store.drawPixel(x, ix, emptyPixel)
+      })
+
       // Now play music using the new matrix/store if the user has turned it on
       if(soundRefresh) faceTone(positions, store, size, soundRefresh)
 
+      const ledArray = []
+      mask.forEach(([start, end], row) => {
+        for(let i = ((row * size.width) + start), span =0 ; span < end; span++, i++) {
+          matrix.data[i] && ledArray.push(rgb2hex(matrix.data[i].color))
+        }
+      })
+
       // send the data to the raspberry pi to refresh the real LED matrix
-      socket.emit('face', matrix.data.slice(0, size.width * size.height).map(({color}) => [color.r, color.g, color.b, color.a]))
+      socket.emit('face', ledArray.join(','))
 
       // redraw the canvas display
       // using the current matrix/store
