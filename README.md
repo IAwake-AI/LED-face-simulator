@@ -28,11 +28,28 @@ You will need to have an older version of Node installed vs 7 and
 you need to run as root
 
 ```
+$ sudo -s
+# apt-get purge nodejs
+# curl -L https://git.io/n-install | bash
+# /root/n/bin/n 7.10.1
+# npm install -g nodemon
+```
+
+```
 $ clone git@github.com:IAwake-AI/LED-face-simulator.git
 $ cd LED-face-simulator
 $ npm install
+$ npm install node-blinkt
 $ npm run build
 $ sudo npm start
+```
+
+NOTE: You need to install node-blinkt for the Raspberry PI
+because it can not be added to package.json (the osx version does not support node-blinkt)
+
+For development
+```
+$ npm run dev
 ```
 
 #### Build and Deploy
