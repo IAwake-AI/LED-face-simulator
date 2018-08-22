@@ -37,11 +37,11 @@ if(detectRPI()) {
       })
     } else {
       console.log('You need to set environment variable LED_DRIVER\n\ni.e. export LED_DRIVER=blinkt or LED_DRIVER=ws281x')
-      process.exitCode(1)
+      process.exit(1)
     }
   } catch(err) {
     console.log('On RPI you need to run "npm install node-blinkt rpi-ws281x-native" and run as root!\n\n')
-    process.exitCode(1)
+    process.exit(1)
   }
 }
 
