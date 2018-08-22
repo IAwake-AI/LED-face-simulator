@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for(let i=0; i < level3; i++) mask[i+level2] = slopeMask(i, size, mask[level1+level2-1][1] - mask[level1+level2-1][0], -3)
 
     // WITH NO MASK!
-    //for(let i=0; i < size.height; i++) mask[i] = [0, size.width]
+    for(let i=0; i < size.height; i++) mask[i] = [0, size.width]
 
     // setup a LED matrix (in memory model of all the LEDs)
     const store = createStore(size.width, size.height)
