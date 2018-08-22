@@ -10,7 +10,7 @@ import detectRPI from 'detect-rpi'
 
 // environment variables you can set
 const LED_DRIVER = process.env.LED_DRIVER
-const LED_MAX = process.env.LED_MAX || (16 * 4)
+const LED_MAX = parseInt(process.env.LED_MAX || (16 * 4), 10)
 
 let leds = null
 let ledsWS281X = null
@@ -47,6 +47,7 @@ if(detectRPI()) {
     }
   } catch(err) {
     console.log('On RPI you need to run "npm install node-blinkt rpi-ws281x-native" and run as root!\n\n')
+    console.log('ERROR', err)
     process.exit(1)
   }
 }
