@@ -8,23 +8,41 @@ import express from 'express'
 import socketIO from 'socket.io'
 import detectRPI from 'detect-rpi'
 
+// environment variables you can set
+const LED_DRIVER = process.env.LED_DRIVER
+const LED_MAX = process.env.LED_MAX || (16 * 4)
+
 let leds = null
+let ledsWS281X = null
+
 if(detectRPI()) {
   try {
-    const Blinkt = require('node-blinkt')
-    leds = new Blinkt()
+    const ws281x = require('rpi-ws281x-native')
+    if(LED_DRIVER === 'blinkt') {
+      const Blinkt = require('node-blinkt')
+      leds = new Blinkt()
+
+      leds.setup()
+      leds.clearAll()
+    } else if(LED_DRIVER === 'ws281x') {
+      leds = require('rpi-ws281x-native')
+      leds.init(LED_MAX)
+      leds.setBrightness(1)
+
+      ledsWS281X = ew Uint32Array(LED_MAX)
+
+      process.on('SIGINT', () => {
+        leds.reset()
+        process.nextTick(() => process.exit(0))
+      })
+    } else {
+      console.log('You need to set environment variable LED_DRIVER\n\ni.e. export LED_DRIVER=blinkt or LED_DRIVER=ws281x')
+      process.exitCode(1)
+    }
   } catch(err) {
-    console.log('On RPI you need to install "node-blinkt" and run as root!\n$ npm install node-blinkt\n\n')
+    console.log('On RPI you need to run "npm install node-blinkt rpi-ws281x-native" and run as root!\n\n')
     process.exitCode(1)
   }
-
-  leds.setup()
-  leds.clearAll()
-}
-
-function toRGB(hex) {
-
-  return [r, g, b, 1]
 }
 
 const app = express()
@@ -44,19 +62,32 @@ const io = socketIO(index)
 io.on('connection', function (socket) {
   socket.on('face', function (data) {
     if(leds) {
-      data.split(',').forEach((hex, ix) => {
-        const bigint = parseInt(hex, 16)
-        const r = (bigint >> 16) & 255
-        const g = (bigint >> 8) & 255
-        const b = bigint & 255
+      if(driver === 'blinkt') {
+        data.split(',').forEach((hex, ix) => {
+          if(ix > LED_MAX) return; // ignore LED over our address space
 
-        leds.setPixel(ix, r, g, b, 1)
-      })
+          const bigint = parseInt(hex, 16)
+          const r = (bigint >> 16) & 255
+          const g = (bigint >> 8) & 255
+          const b = bigint & 255
 
-      leds.sendUpdate()
+          leds.setPixel(ix, r, g, b, 1)
+        })
+
+        leds.sendUpdate()
+      } else if(driver === 'ws281x') {
+        data.split(',').forEach((hex, ix) => {
+          if(ix > LED_MAX) return; // ignore LED over our address space
+
+          const bigint = parseInt(hex, 16)
+          ledsWS281X[ix] = bigint
+        })
+
+        leds.render(ledsWS281X)
+      }
     }
-  });
-});
+  })
+})
 
 app.use(express.static(staticPath))
 app.get('/bundle.js', (req, res) => res.type('javascript').sendFile(path.join(buildPath, 'bundle.js')))

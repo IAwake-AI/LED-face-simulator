@@ -74,4 +74,8 @@ Checkout [commit diff](https://github.com/IAwake-AI/LED-face-simulator/commit/49
 The `frontend` directory holds all the logic for face detection and sending
 data to the backend. It sends the data via a websocket.
 
-
+set the correct driver for the LED server
+```
+export LED_DRIVER=blinkt or ws281x
+export LED_MAX=64
+```
