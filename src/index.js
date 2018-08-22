@@ -26,7 +26,6 @@ if(detectRPI()) {
       leds.clearAll()
     } else if(LED_DRIVER === 'ws281x') {
       leds = require('rpi-ws281x-native')
-      leds.reset()
       leds.init(LED_MAX)
       leds.setBrightness(1)
 
@@ -69,7 +68,7 @@ const io = socketIO(index)
 io.on('connection', function (socket) {
   socket.on('face', function (data) {
     if(leds) {
-      if(driver === 'blinkt') {
+      if(LED_DRIVER === 'blinkt') {
         data.split(',').forEach((hex, ix) => {
           if(ix > LED_MAX) return; // ignore LED over our address space
 
@@ -82,7 +81,7 @@ io.on('connection', function (socket) {
         })
 
         leds.sendUpdate()
-      } else if(driver === 'ws281x') {
+      } else if(LED_DRIVER === 'ws281x') {
         data.split(',').forEach((hex, ix) => {
           if(ix > LED_MAX) return; // ignore LED over our address space
 
