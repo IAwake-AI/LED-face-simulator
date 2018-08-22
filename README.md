@@ -39,7 +39,7 @@ $ sudo -s
 $ clone git@github.com:IAwake-AI/LED-face-simulator.git
 $ cd LED-face-simulator
 $ npm install
-$ npm install node-blinkt
+$ npm install node-blinkt rpi-ws281x-native
 $ npm run build
 $ sudo npm start
 ```
@@ -49,8 +49,15 @@ because it can not be added to package.json (the osx version does not support no
 
 For development
 ```
-$ npm run dev
+$ npm run pidev
 ```
+
+NOTE: Other environment variables for PI development
+```
+export LED_DRIVER=blinkt or ws281x
+export LED_MAX=64
+```
+
 
 #### Build and Deploy
 
@@ -73,9 +80,3 @@ Checkout [commit diff](https://github.com/IAwake-AI/LED-face-simulator/commit/49
 
 The `frontend` directory holds all the logic for face detection and sending
 data to the backend. It sends the data via a websocket.
-
-set the correct driver for the LED server
-```
-export LED_DRIVER=blinkt or ws281x
-export LED_MAX=64
-```

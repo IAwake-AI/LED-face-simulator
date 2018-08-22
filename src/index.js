@@ -26,10 +26,16 @@ if(detectRPI()) {
       leds.clearAll()
     } else if(LED_DRIVER === 'ws281x') {
       leds = require('rpi-ws281x-native')
+      leds.reset()
       leds.init(LED_MAX)
       leds.setBrightness(1)
 
       ledsWS281X = new Uint32Array(LED_MAX)
+      for(let i=0; i<LED_MAX; i++) {
+        ledsWS281X[i] = 0
+      }
+
+      leds.render(ledsWS281X)
 
       process.on('SIGINT', () => {
         leds.reset()
