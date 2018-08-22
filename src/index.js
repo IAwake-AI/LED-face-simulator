@@ -29,7 +29,7 @@ if(detectRPI()) {
       leds.init(LED_MAX)
       leds.setBrightness(1)
 
-      ledsWS281X = ew Uint32Array(LED_MAX)
+      ledsWS281X = new Uint32Array(LED_MAX)
 
       process.on('SIGINT', () => {
         leds.reset()
