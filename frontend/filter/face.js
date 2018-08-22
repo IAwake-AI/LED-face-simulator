@@ -11,7 +11,7 @@ export default function(positions, store, size) {
     }
   }, {min:[Number.MAX_VALUE, Number.MAX_VALUE], max: [0,0]})
 
-  store.fillRect(0, 0, size.width, size.height, Color.rgba(0,0,0,.05))
+  store.fillRect(0, 0, size.width, size.height, Color.rgba(255,0,0,1))
 
   pointList.forEach(ix => {
     store.drawPixel(

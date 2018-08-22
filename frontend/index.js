@@ -55,8 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterElement = document.getElementById('filter')
 
   function onSettingChanged() {
-    const width = Number(widthElement.value)
-    const height = Number(heightElement.value)
+    const width = 30
+    const height = 25
     const pixalSize = Number(pixalSizeElement.value)
     const pixalMargin = Number(pixalMarginElement.value)
     const refresh = Number(refreshElement.value)
@@ -85,18 +85,33 @@ document.addEventListener("DOMContentLoaded", () => {
     // the mask is an array of [row] => that have [start, end] so that anything
     // between 0-start and end-(end edge) will be ignored or only pixel between
     // start-end will be used per row
-    const mask = []
-    const level1 = Math.floor(size.height * 1/5)
-    const level2 = Math.floor(size.height * 4/5)
-    const level3 = Math.floor(size.height * 2/5)
-
-    mask[0] = slopeMask(0, size, 2, 10)
-    for(let i=1; i < level1; i++) mask[i] = slopeMask(i, size, 4, 10)
-    for(let i=0; i < level2; i++) mask[i+level1] = slopeMask(i, size, size.width, -.6)
-    for(let i=0; i < level3; i++) mask[i+level2] = slopeMask(i, size, mask[level1+level2-1][1] - mask[level1+level2-1][0], -3)
-
-    // WITH NO MASK!
-    for(let i=0; i < size.height; i++) mask[i] = [0, size.width]
+    const mask = [
+      [13, 17],
+      [10, 20],
+      [7, 23],
+      [4, 26],
+      [1, 29],
+      [0, 30],
+      [1, 29],
+      [1, 29],
+      [2, 28],
+      [2, 28],
+      [3, 27],
+      [3, 27],
+      [4, 26],
+      [5, 25],
+      [5, 25],
+      [6, 24],
+      [6, 24],
+      [7, 23],
+      [7, 23],
+      [8, 22],
+      [8, 22],
+      [9, 21],
+      [11, 19],
+      [13, 17],
+      [14, 16],
+    ]
 
     // setup a LED matrix (in memory model of all the LEDs)
     const store = createStore(size.width, size.height)

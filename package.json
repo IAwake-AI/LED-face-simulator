@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pi": "LED_MAX=450 LED_DRIVER=blinkt node build/index.js",
     "start": "node build/index.js",
-    "pi": "LED_MAX=5 LED_DRIVER=ws281x node build/index.js",
     "dev": "NO_TLS=1 PORT=3000 concurrently npm:backend npm:frontend",
     "pidev": "LED_MAX=5 LED_DRIVER=ws281x concurrently npm:backend npm:frontend",
     "backend": "nodemon src/index.js --exec babel-node --presets es2015,stage-2",

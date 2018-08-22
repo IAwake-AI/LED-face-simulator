@@ -9,17 +9,17 @@ export default function(positions, store, size) {
     }
   }, {min:[Number.MAX_VALUE, Number.MAX_VALUE], max: [0,0]})
 
-  store.fillRect(0, 0, size.width, size.height, Color.rgba(0,0,0,.05))
+  store.fillRect(0, 0, size.width, size.height, Color.rgba(255,0,0,.05))
 
   let last = positions[0]
 
   positions.forEach(coord => {
     store.drawLine(
-      Math.floor((last[0] - clamp.min[0])/((clamp.max[0]-clamp.min[0])/size.width)),
-      Math.floor((last[1] - clamp.min[1])/((clamp.max[1]-clamp.min[1])/size.height)),
+      Math.floor((((last[0] - clamp.min[0])/((clamp.max[0]-clamp.min[0])/size.width))*.5) + 5),
+      Math.floor((((last[1] - clamp.min[1])/((clamp.max[1]-clamp.min[1])/size.height))*.5) + 5),
 
-      Math.floor((coord[0] - clamp.min[0])/((clamp.max[0]-clamp.min[0])/size.width)),
-      Math.floor((coord[1] - clamp.min[1])/((clamp.max[1]-clamp.min[1])/size.height)),
+      Math.floor((((coord[0] - clamp.min[0])/((clamp.max[0]-clamp.min[0])/size.width))*.5) + 5),
+      Math.floor((((coord[1] - clamp.min[1])/((clamp.max[1]-clamp.min[1])/size.height))*.5) + 5),
       Color.hex('#FFCC00'),
     )
 
