@@ -27,7 +27,7 @@ if(detectRPI()) {
     } else if(LED_DRIVER === 'ws281x') {
       leds = require('rpi-ws281x-native')
       leds.init(LED_MAX)
-      leds.setBrightness(1)
+      leds.setBrightness(30)
 
       ledsWS281X = new Uint32Array(LED_MAX)
       for(let i=0; i<LED_MAX; i++) {
@@ -88,7 +88,7 @@ io.on('connection', function (socket) {
           const bigint = parseInt(hex, 16)
           ledsWS281X[ix] = bigint
         })
-
+ledsWS281X[131] = parseInt('00ff00', 16)
         leds.render(ledsWS281X)
       }
     }
@@ -103,3 +103,4 @@ dns.lookup(os.hostname(), function (err, address, fam) {
 })
 
 index.listen(port)
+

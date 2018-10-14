@@ -86,18 +86,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // between 0-start and end-(end edge) will be ignored or only pixel between
     // start-end will be used per row
     const mask = []
-    const level1 = Math.floor(size.height * 1/5)
-    const level2 = Math.floor(size.height * 4/5)
-    const level3 = Math.floor(size.height * 2/5)
-
-    mask[0] = slopeMask(0, size, 2, 10)
-    for(let i=1; i < level1; i++) mask[i] = slopeMask(i, size, 4, 10)
-    for(let i=0; i < level2; i++) mask[i+level1] = slopeMask(i, size, size.width, -.6)
-    for(let i=0; i < level3; i++) mask[i+level2] = slopeMask(i, size, mask[level1+level2-1][1] - mask[level1+level2-1][0], -3)
-
-    // WITH NO MASK!
-    for(let i=0; i < size.height; i++) mask[i] = [0, size.width]
-
+function r(w) { const s = (size.width - w)/2; return [s,(s+w)] }
+/*mask[0]=r(4)
+mask[1]=r(8)
+mask[2]=r(12)
+mask[3]=r(10)
+mask[4]=r(10)
+mask[5]=r(8)
+mask[6]=r(8)
+mask[7]=r(6)
+mask[8]=r(4)
+*/
     // setup a LED matrix (in memory model of all the LEDs)
     const store = createStore(size.width, size.height)
     const matrix = new LedMatrix(canvasElement, {
@@ -137,16 +136,28 @@ document.addEventListener("DOMContentLoaded", () => {
         for(let x=0; x<offset; x++) store.drawPixel(x, ix, emptyPixel)
         for(let x=end; x<size.width; x++) store.drawPixel(x, ix, emptyPixel)
       })
-
+//for(let c=15; c>=0;c--) for(let r=9;r>=0;r--)  store.drawPixel(c,r,Color.rgba(0,255,0,1))
+//for(let i=0;i<=8;i++) store.drawPixel(8,i,Color.rgba(255,0,0,1))
+	    
       // Now play music using the new matrix/store if the user has turned it on
       if(soundRefresh) faceTone(positions, store, size, soundRefresh)
 
+//store.drawPixel(1,1,Color.rgba(255,0,0,0))
       const ledArray = []
-      mask.forEach(([start, end], row) => {
-        for(let i = ((row * size.width) + start), span =0 ; span < end; span++, i++) {
-          matrix.data[i] && ledArray.push(rgb2hex(matrix.data[i].color))
-        }
-      })
+for(let i=8;i>=7;i--) ledArray.push(rgb2hex(matrix.data[i].color))
+for(let c=15; c>=0;c--) {
+	if(c%2) for(let r=8;r>=1;r--) {
+		console.log(r,c, (r*16)+c);
+		
+		ledArray.push(rgb2hex(matrix.data[(r*16)+c].color))
+	}
+	else for(let r=1;r<=8;r++) {
+		console.log(r,c,(r*16)+c)
+		ledArray.push(rgb2hex(matrix.data[(r*16)+c].color))
+	}
+}
+    //mapping.forEach((i)=> {ledArray.push(rgb2hex(matrix.data[i].color))})
+for(let i=133;i>=132;i--) ledArray.push(rgb2hex(matrix.data[i].color))
 
       // send the data to the raspberry pi to refresh the real LED matrix
       socket.emit('face', ledArray.join(','))

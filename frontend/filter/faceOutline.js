@@ -20,7 +20,6 @@ export default function(positions, store, size) {
 
       Math.floor((coord[0] - clamp.min[0])/((clamp.max[0]-clamp.min[0])/size.width)),
       Math.floor((coord[1] - clamp.min[1])/((clamp.max[1]-clamp.min[1])/size.height)),
-      Color.hex('#FFCC00'),
     )
 
     last = coord

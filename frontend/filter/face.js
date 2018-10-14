@@ -15,8 +15,9 @@ export default function(positions, store, size) {
 
   pointList.forEach(ix => {
     store.drawPixel(
-      Math.floor((positions[ix][0] - clamp.min[0]) / ((clamp.max[0] - clamp.min[0]) / size.width)),
-      Math.floor((positions[ix][1] - clamp.min[1]) / ((clamp.max[1] - clamp.min[1]) / size.height)),
-      Color.hex('#FFCC00'))
+      Math.floor((positions[ix][0] - clamp.min[0]) / ((clamp.max[0] - clamp.min[0]) / size.width+4)),
+      Math.floor((positions[ix][1] - clamp.min[1]) / ((clamp.max[1] - clamp.min[1]) / size.height+4)),
+      Color.hex('#4A6DF7'))
   })
 }
+
